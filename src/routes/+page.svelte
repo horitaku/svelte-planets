@@ -1,6 +1,10 @@
 <script>
-    export let name
-    name = "takuya"
+    let name = "takuya"
+    let age = 30
+
+    function incrementAge() {
+        age++
+    }
 </script>
 
 <style>
@@ -15,8 +19,8 @@
     Hello world!
 </h1>
 
-<p>hello {name}</p>
+<p>hello {name}, my age is {age}!</p>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
 npm
 
-<button class="btn">Hello daisyUI</button>
+<button class="btn" on:click={incrementAge}>Change Age</button>
