@@ -1,0 +1,49 @@
+version: '3'
+services:
+  ############################
+  # Planets frontend + Dapr sidecar
+  ############################
+  planets:
+    build: .
+    ports:
+      - "3033:3000"
+    depends_on:
+      - redis
+      - placement
+    networks:
+      - planets-dapr-network
+  planets-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+              "-app-id", "planets",
+              "-app-port", "3000",
+              "-placement-host-address", "placement:50006",
+              "-dapr-grpc-port", "50002",
+              "-components-path", "/components"]
+    volumes:
+      - "./dapr/components/:/components"
+    depends_on:
+      - planets
+    network_mode: "service:planets"
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - planets-dapr-network
+  ############################
+  # Redis state store
+  ############################
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6380:6379"
+    networks:
+      - planets-dapr-network
+networks:
+  planets-dapr-network:
